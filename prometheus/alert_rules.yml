@@ -1,0 +1,30 @@
+groups:
+  - name: server_health_alerts
+    rules:
+
+      - alert: HighCPUUsage
+        expr: 100 * (1 - avg by(instance) (rate(windows_cpu_time_seconds_total{mode="idle"}[5m]))) > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU Usage Detected"
+          description: "Windows CPU usage is above 80%."
+
+      - alert: HighMemoryUsage
+        expr: (1 - (windows_memory_available_bytes / windows_memory_physical_total_bytes)) * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Memory Usage Detected"
+          description: "Windows memory usage is above 80%."
+
+      - alert: HighDiskUsage
+        expr: (1 - (windows_logical_disk_free_bytes{volume="C:"} / windows_logical_disk_size_bytes{volume="C:"})) * 100 > 80
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High Disk Usage Detected"
+          description: "Windows C drive disk usage is above 80%."
